@@ -13,7 +13,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import java.util.Locale
 import java.util.Locale.getDefault
 import java.util.prefs.Preferences
 
@@ -22,15 +21,15 @@ fun SignUpScreen(
     onSignUpSuccess: () -> Unit, onNavigateToLogin: () -> Unit, onNavigateToForgotPassword: () -> Unit
 ) {
     // State vars
-    var fullName by remember { mutableStateOf("") }
+    var emailId by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val prefs = Preferences.userRoot().node("dUtils")
 
-    fun validateDetails(fName: String, user: String, pass: String): Boolean {
+    fun validateDetails(email: String, user: String, pass: String): Boolean {
 
-        if (fName.isBlank() || user.isBlank() || pass.isBlank()) return false
+        if (email.isBlank() || user.isBlank() || pass.isBlank()) return false
 
         // Check if this user already exists
         val allKeys = prefs.keys()
@@ -39,7 +38,7 @@ fun SignUpScreen(
 
         // finally, add details to preferences
         prefs.put(user, user)
-        prefs.put("${user.lowercase(getDefault())}_fn", fName)
+        prefs.put("${user.lowercase(getDefault())}_em", email)
         prefs.put("${user.lowercase(getDefault())}_pwd", pass)
 
         return true
@@ -74,9 +73,9 @@ fun SignUpScreen(
                 )
 
                 OutlinedTextField(
-                    value = fullName,
-                    onValueChange = { fullName = it; errorMessage = null },
-                    label = { Text("Full Name") },
+                    value = emailId,
+                    onValueChange = { emailId = it; errorMessage = null },
+                    label = { Text("Email Id") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(0.6f),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
@@ -101,7 +100,7 @@ fun SignUpScreen(
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            if (validateDetails(fullName, username, password)) {
+                            if (validateDetails(emailId, username, password)) {
 
 
                                 onSignUpSuccess()
@@ -119,18 +118,14 @@ fun SignUpScreen(
 
                 Button(
                     onClick = {
-                        if (validateDetails(fullName, username, password)) {
-                            // Add details to preferences
-                            prefs.put(username + "_fn", fullName)
-                            prefs.put(username + "_pwd", password)
-
+                        if (validateDetails(emailId, username, password)) {
                             onSignUpSuccess()
                         } else {
                             errorMessage = "Invalid details entered!"
                         }
                     }, modifier = Modifier.fillMaxWidth(0.6f).padding(top = 16.dp)
                 ) {
-                    Text("SignUp", modifier = Modifier.padding(4.dp))
+                    Text("Sign Up", modifier = Modifier.padding(4.dp))
                 }
 
                 Row(

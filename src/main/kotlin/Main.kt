@@ -3,31 +3,51 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import screens.FileOperationsScreen
-import screens.LoginScreen
-import screens.SignUpScreen
+import navigation.NavigationHost
+import navigation.Screen
+import navigation.rememberNavController
 
 @Composable
 @Preview
 fun App() {
+
+    // Create navigation controller with Login as start destination
+    val navController = rememberNavController(
+        startDestination = Screen.Login.route
+    )
+
     MaterialTheme {
-        // FileOperationsScreen()
-
-        LoginScreen(
-            { println("Callback On Login Success") },
-            { println("Callback To Navigate to Signup") },
-        ) {
-            println("Callback to Reset password")
-        }
-
-//        SignUpScreen(
-//            { println("Callback On SignUp Success") },
-//            { println("Callback To Navigate to Login") },
-//        ) {
-//            println("Callback to Reset password")
-//        }
-
+        // Use NavigationHost to handle routing
+        NavigationHost(navController = navController)
     }
+
+
+//    MaterialTheme {
+//        // FileOperationsScreen()
+//
+////        LoginScreen(
+////            { println("Callback On Login Success") },
+////            { println("Callback To Navigate to Signup") },
+////        ) {
+////            println("Callback to Reset password")
+////        }
+//
+////        SignUpScreen(
+////            { println("Callback On SignUp Success") },
+////            { println("Callback To Navigate to Login") },
+////        ) {
+////            println("Callback to Reset password")
+////        }
+//
+////        ForgotPasswordScreen(
+////            { println("Callback On Login Success") },
+////            { println("Callback To Navigate to Login") },
+////        ) {
+////            println("Callback To Navigate to Signup")
+////        }
+//
+//    }
+
 }
 
 fun main() = application {

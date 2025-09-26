@@ -10,30 +10,38 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import utils.CommonUtils.randomPassword
 import java.util.Locale.getDefault
 import java.util.prefs.Preferences
 
 @Composable
-fun LoginScreen(
-    onLoginSuccess: () -> Unit, onNavigateToSignup: () -> Unit, onNavigateToForgotPassword: () -> Unit
+fun ForgotPasswordScreen(
+    onForgotPasswordSuccess: () -> Unit, onNavigateToLogin: () -> Unit, onNavigateToSignup: () -> Unit
 ) {
     // State vars
     var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var message by remember { mutableStateOf<String?>(null) }
     val prefs = Preferences.userRoot().node("dUtils")
 
-    fun validateCredentials(user: String, pass: String): Boolean {
-
+    fun validateCredentials(user: String): Boolean {
         if (!prefs.keys().contains(user)) return false
 
-        val storedEmail = prefs.get("${user.lowercase(getDefault())}_em", null)
-        val storedPass = prefs.get("${user.lowercase(getDefault())}_pwd", null)
+        val storedUser = prefs.get(user, null)
+        val isValidUser = storedUser != null && storedUser.isNotBlank()
 
-        return storedEmail != null && !storedEmail.isBlank() && storedPass != null && storedPass == pass
+        // set the message as well.
+        if (isValidUser) {
+            val newPassword = randomPassword(user)
+
+            // Update the preferences
+            prefs.put("${user.lowercase(getDefault())}_pwd", newPassword)
+
+            message = "Your new password is $newPassword"
+        }
+
+        return isValidUser
     }
 
     Column(
@@ -55,7 +63,7 @@ fun LoginScreen(
             ) {
 
                 Text(
-                    text = "Login",
+                    text = "Forgot Password",
                     style = MaterialTheme.typography.h4,
                     color = MaterialTheme.colors.primary,
                     modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
@@ -65,55 +73,54 @@ fun LoginScreen(
 
                 OutlinedTextField(
                     value = username,
-                    onValueChange = { username = it; errorMessage = null },
+                    onValueChange = { username = it; message = null },
                     label = { Text("Username") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(0.6f),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-                )
-
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it; errorMessage = null },
-                    label = { Text("Password") },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth(0.6f).padding(top = 8.dp),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            if (validateCredentials(username, password)) onLoginSuccess()
-                            else errorMessage = "Invalid credentials"
+                            if (validateCredentials(username)) onForgotPasswordSuccess()
+                            else message = "Invalid credentials"
                         })
                 )
 
-                errorMessage?.let {
+//                message?.let {
+//                    Text(
+//                        text = it, color = MaterialTheme.colors.error, modifier = Modifier.padding(top = 8.dp)
+//                    )
+//                }
+
+                message?.let { msg ->
                     Text(
-                        text = it, color = MaterialTheme.colors.error, modifier = Modifier.padding(top = 8.dp)
+                        text = msg, color = if (msg.startsWith("Your new password")) {
+                            MaterialTheme.colors.primary  // success message
+                        } else {
+                            MaterialTheme.colors.error     // error message
+                        }, modifier = Modifier.padding(top = 8.dp)
                     )
                 }
 
                 Button(
                     onClick = {
-                        if (validateCredentials(username, password)) {
-                            onLoginSuccess()
+                        if (validateCredentials(username)) {
+                            onForgotPasswordSuccess()
                         } else {
-                            errorMessage = "Invalid credentials"
+                            message = "Invalid credentials"
                         }
                     }, modifier = Modifier.fillMaxWidth(0.6f).padding(top = 16.dp)
                 ) {
-                    Text("Login", modifier = Modifier.padding(4.dp))
+                    Text("Reset", modifier = Modifier.padding(4.dp))
                 }
 
                 Row(
                     modifier = Modifier.padding(top = 8.dp).fillMaxWidth(0.6f),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    TextButton(onClick = onNavigateToLogin) { Text("Login") }
                     TextButton(onClick = onNavigateToSignup) { Text("Sign Up") }
-                    TextButton(onClick = onNavigateToForgotPassword) { Text("Forgot Password?") }
                 }
             }
-
 
         }
     }

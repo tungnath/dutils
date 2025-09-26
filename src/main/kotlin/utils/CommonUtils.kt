@@ -11,4 +11,17 @@ object CommonUtils {
         return !MaterialTheme.colors.isLight
     }
 
+
+    fun randomPassword(user: String): String {
+        return "$user@${(Math.random() * 100000).toInt()}"
+    }
+
+//    fun randomPassword(username: String): String {
+//        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+//        val random = Random(username.hashCode()) // Seed with username for consistency
+//        return (1..8)
+//            .map { chars.random(random) }
+//            .joinToString("")
+//    }
+
 }
