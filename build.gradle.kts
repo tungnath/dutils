@@ -32,6 +32,18 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "dutils"
             packageVersion = "1.0.0"
+
+            macOS {
+                iconFile.set(project.file("src/main/resources/drawable/ic2.icns"))
+            }
+            windows {
+                iconFile.set(project.file("src/main/resources/drawable/ic3.ico"))
+            }
+            linux {
+                iconFile.set(project.file("src/main/resources/drawable/ic2.png"))
+            }
+
         }
+
     }
 }
