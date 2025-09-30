@@ -46,7 +46,7 @@ fun LoginScreen(
         }
 
         if (!prefs.keys().contains(user)) {
-            errorMessage = "Username doesn't exists"
+            errorMessage = "Username doesn't exist"
             return false
         }
 
