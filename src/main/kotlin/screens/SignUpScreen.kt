@@ -27,9 +27,7 @@ import java.util.prefs.Preferences
 
 @Composable
 fun SignUpScreen(
-    onSignUpSuccess: () -> Unit,
-    onNavigateToLogin: () -> Unit,
-    onNavigateToForgotPassword: () -> Unit
+    onSignUpSuccess: () -> Unit, onNavigateToLogin: () -> Unit, onNavigateToForgotPassword: () -> Unit
 ) {
     var emailId by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -61,22 +59,18 @@ fun SignUpScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        MaterialTheme.colors.primary.copy(alpha = 0.2f),
-                        MaterialTheme.colors.background
-                    )
+        modifier = Modifier.fillMaxSize().background(
+            Brush.verticalGradient(
+                listOf(
+                    MaterialTheme.colors.primary.copy(alpha = 0.3f),
+                    MaterialTheme.colors.background,
+                    MaterialTheme.colors.secondary.copy(alpha = 0.3f)
                 )
             )
+        )
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .fillMaxHeight(0.85f)
-                .align(Alignment.Center),
+            modifier = Modifier.fillMaxWidth(0.8f).fillMaxHeight(0.85f).align(Alignment.Center),
             elevation = 12.dp,
             shape = RoundedCornerShape(16.dp),
             backgroundColor = MaterialTheme.colors.surface
@@ -84,24 +78,19 @@ fun SignUpScreen(
             Column(modifier = Modifier.fillMaxSize()) {
 
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(0.25f),
-                    contentAlignment = Alignment.Center
+                    modifier = Modifier.fillMaxWidth().weight(0.25f), contentAlignment = Alignment.Center
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         val resource = remember {
-                            Thread.currentThread().contextClassLoader
-                                .getResource("drawable/ic2.png")
+                            Thread.currentThread().contextClassLoader.getResource("drawable/ic2.png")
                         }
                         if (resource != null) {
                             Image(
                                 painter = painterResource("drawable/ic2.png"),
                                 contentDescription = null,
-                                modifier = Modifier.size(56.dp)
-                                    .clip(RoundedCornerShape(12.dp))
+                                modifier = Modifier.size(56.dp).clip(RoundedCornerShape(12.dp))
                             )
                         } else {
                             Icon(
@@ -113,23 +102,14 @@ fun SignUpScreen(
                         }
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "Create Account",
-                            style = MaterialTheme.typography.h5,
-                            fontWeight = FontWeight.Bold
+                            "Create Account", style = MaterialTheme.typography.h5, fontWeight = FontWeight.Bold
                         )
-//                        Text(
-//                            "Join dUtils today",
-//                            style = MaterialTheme.typography.subtitle2,
-//                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
-//                        )
                     }
                 }
 
 
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(0.75f),
+                    modifier = Modifier.fillMaxWidth().weight(0.75f),
                     contentAlignment = Alignment.Center,
                 ) {
                     Column(
@@ -141,7 +121,11 @@ fun SignUpScreen(
                             value = emailId,
                             onValueChange = { emailId = it; errorMessage = null },
                             label = { Text("Email Address") },
-                            leadingIcon = { Icon(Icons.Default.Email, null, tint = MaterialTheme.colors.primary) },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.Email, null, tint = MaterialTheme.colors.primary
+                                )
+                            },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -154,7 +138,11 @@ fun SignUpScreen(
                             value = username,
                             onValueChange = { username = it; errorMessage = null },
                             label = { Text("Username") },
-                            leadingIcon = { Icon(Icons.Default.Person, null, tint = MaterialTheme.colors.primary) },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.Person, null, tint = MaterialTheme.colors.primary
+                                )
+                            },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -167,16 +155,22 @@ fun SignUpScreen(
                             value = password,
                             onValueChange = { password = it; errorMessage = null },
                             label = { Text("Password") },
-                            leadingIcon = { Icon(Icons.Default.Lock, null, tint = MaterialTheme.colors.primary) },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.Lock, null, tint = MaterialTheme.colors.primary
+                                )
+                            },
                             visualTransformation = PasswordVisualTransformation(),
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                             keyboardActions = KeyboardActions(
                                 onDone = {
-                                    if (validateDetails(emailId, username, password)) onSignUpSuccess()
-                                }
-                            ),
+                                    if (validateDetails(
+                                            emailId, username, password
+                                        )
+                                    ) onSignUpSuccess()
+                                }),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 focusedBorderColor = MaterialTheme.colors.primary,
                                 focusedLabelColor = MaterialTheme.colors.primary
@@ -186,20 +180,21 @@ fun SignUpScreen(
 
                         errorMessage?.let {
                             Text(
-                                it, color = MaterialTheme.colors.error,
-                                modifier = Modifier.padding(top = 8.dp)
+                                it, color = MaterialTheme.colors.error, modifier = Modifier.padding(top = 8.dp)
                             )
                         }
                         Button(
-                            onClick = { if (validateDetails(emailId, username, password)) onSignUpSuccess() },
-                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                            shape = RoundedCornerShape(12.dp)
+                            onClick = {
+                                if (validateDetails(
+                                        emailId, username, password
+                                    )
+                                ) onSignUpSuccess()
+                            }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp), shape = RoundedCornerShape(12.dp)
                         ) {
                             Text("Create Account")
                         }
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             TextButton(
                                 onClick = onNavigateToLogin, colors = ButtonDefaults.textButtonColors(
@@ -222,51 +217,6 @@ fun SignUpScreen(
 
                 }
 
-
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .weight(0.25f),
-//                    contentAlignment = Alignment.Center
-//                ) {
-//                    Column(
-//                        modifier = Modifier.fillMaxWidth(0.8f),
-//                        verticalArrangement = Arrangement.Center,
-//                        horizontalAlignment = Alignment.CenterHorizontally
-//                    ) {
-//                        errorMessage?.let {
-//                            Text(it, color = MaterialTheme.colors.error,
-//                                modifier = Modifier.padding(top = 8.dp))
-//                        }
-//                        Button(
-//                            onClick = { if (validateDetails(emailId, username, password)) onSignUpSuccess() },
-//                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-//                            shape = RoundedCornerShape(12.dp)
-//                        ) {
-//                            Text("Create Account")
-//                        }
-//                        Row(
-//                            modifier = Modifier.fillMaxWidth(),
-//                            horizontalArrangement = Arrangement.SpaceBetween
-//                        ) {
-//                            TextButton(
-//                                onClick = onNavigateToLogin, colors = ButtonDefaults.textButtonColors(
-//                                    contentColor = MaterialTheme.colors.primary
-//                                )
-//                            ) {
-//                                Text("Already have account?")
-//                            }
-//
-//                            TextButton(
-//                                onClick = onNavigateToForgotPassword, colors = ButtonDefaults.textButtonColors(
-//                                    contentColor = MaterialTheme.colors.primary
-//                                )
-//                            ) {
-//                                Text("Forgot Password?")
-//                            }
-//                        }
-//                    }
-//                }
             }
         }
     }
