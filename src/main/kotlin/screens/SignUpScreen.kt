@@ -15,12 +15,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import theme.GradientColors
 import utils.CommonUtils.isValidEmail
 import java.util.Locale.getDefault
 import java.util.prefs.Preferences
@@ -59,21 +60,21 @@ fun SignUpScreen(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize().background(
-            Brush.verticalGradient(
-                listOf(
-                    MaterialTheme.colors.primary.copy(alpha = 0.3f),
-                    MaterialTheme.colors.background,
-                    MaterialTheme.colors.secondary.copy(alpha = 0.3f)
-                )
-            )
-        )
+        modifier = Modifier.fillMaxSize().background(GradientColors.gradientBackground)
+//            .background(Brush.verticalGradient(
+//                listOf(
+//                    MaterialTheme.colors.primary.copy(alpha = 0.3f),
+//                    MaterialTheme.colors.background,
+//                    MaterialTheme.colors.secondary.copy(alpha = 0.3f)
+//                )
+//            )
+//        )
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(0.8f).fillMaxHeight(0.85f).align(Alignment.Center),
             elevation = 12.dp,
             shape = RoundedCornerShape(16.dp),
-            backgroundColor = MaterialTheme.colors.surface
+            backgroundColor = GradientColors.cardSurface //MaterialTheme.colors.surface
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
 
@@ -93,16 +94,26 @@ fun SignUpScreen(
                                 modifier = Modifier.size(56.dp).clip(RoundedCornerShape(12.dp))
                             )
                         } else {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
-                                tint = MaterialTheme.colors.primary,
-                                modifier = Modifier.size(56.dp)
-                            )
+
+                            Box(
+                                modifier = Modifier.size(60.dp).background(
+                                    brush = GradientColors.primaryButton, shape = RoundedCornerShape(20.dp)
+                                ), contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colors.primary,
+                                    modifier = Modifier.size(56.dp)
+                                )
+                            }
                         }
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "Create Account", style = MaterialTheme.typography.h5, fontWeight = FontWeight.Bold
+                            "Create Account",
+                            style = MaterialTheme.typography.h5,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colors.onSurface
                         )
                     }
                 }
@@ -123,15 +134,19 @@ fun SignUpScreen(
                             label = { Text("Email Address") },
                             leadingIcon = {
                                 Icon(
-                                    Icons.Default.Email, null, tint = MaterialTheme.colors.primary
+                                    Icons.Default.Email,
+                                    null,
+                                    tint = GradientColors.primaryPurple //MaterialTheme.colors.primary
                                 )
                             },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = MaterialTheme.colors.primary,
-                                focusedLabelColor = MaterialTheme.colors.primary
+                                focusedBorderColor = GradientColors.primaryPurple,
+                                focusedLabelColor = GradientColors.primaryPurple,
+                                backgroundColor = Color.White.copy(alpha = 0.8f),
+                                unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f)
                             )
                         )
                         OutlinedTextField(
@@ -140,15 +155,17 @@ fun SignUpScreen(
                             label = { Text("Username") },
                             leadingIcon = {
                                 Icon(
-                                    Icons.Default.Person, null, tint = MaterialTheme.colors.primary
+                                    Icons.Default.Person, null, tint = GradientColors.primaryPurple
                                 )
                             },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = MaterialTheme.colors.primary,
-                                focusedLabelColor = MaterialTheme.colors.primary
+                                focusedBorderColor = GradientColors.primaryPurple,
+                                focusedLabelColor = GradientColors.primaryPurple,
+                                backgroundColor = Color.White.copy(alpha = 0.8f),
+                                unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f)
                             )
                         )
                         OutlinedTextField(
@@ -157,7 +174,7 @@ fun SignUpScreen(
                             label = { Text("Password") },
                             leadingIcon = {
                                 Icon(
-                                    Icons.Default.Lock, null, tint = MaterialTheme.colors.primary
+                                    Icons.Default.Lock, null, tint = GradientColors.primaryPurple
                                 )
                             },
                             visualTransformation = PasswordVisualTransformation(),
@@ -172,11 +189,12 @@ fun SignUpScreen(
                                     ) onSignUpSuccess()
                                 }),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = MaterialTheme.colors.primary,
-                                focusedLabelColor = MaterialTheme.colors.primary
+                                focusedBorderColor = GradientColors.primaryPurple,
+                                focusedLabelColor = GradientColors.primaryPurple,
+                                backgroundColor = Color.White.copy(alpha = 0.8f),
+                                unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f)
                             )
                         )
-
 
                         errorMessage?.let {
                             Text(
@@ -189,16 +207,27 @@ fun SignUpScreen(
                                         emailId, username, password
                                     )
                                 ) onSignUpSuccess()
-                            }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp), shape = RoundedCornerShape(12.dp)
+                            }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+//                                .height(56.dp)
+                                .background(
+                                    brush = GradientColors.primaryButton, shape = RoundedCornerShape(18.dp)
+                                ), colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color.Transparent
+                            ), elevation = ButtonDefaults.elevation(0.dp), shape = RoundedCornerShape(18.dp)
                         ) {
-                            Text("Create Account")
+                            Text(
+                                "Create Account",
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold,
+                                style = MaterialTheme.typography.button
+                            )
                         }
                         Row(
                             modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             TextButton(
                                 onClick = onNavigateToLogin, colors = ButtonDefaults.textButtonColors(
-                                    contentColor = MaterialTheme.colors.primary
+                                    contentColor = GradientColors.primaryPurple.copy(alpha = 0.9f), //MaterialTheme.colors.primary
                                 )
                             ) {
                                 Text("Already have account?")
@@ -206,7 +235,7 @@ fun SignUpScreen(
 
                             TextButton(
                                 onClick = onNavigateToForgotPassword, colors = ButtonDefaults.textButtonColors(
-                                    contentColor = MaterialTheme.colors.primary
+                                    contentColor = GradientColors.primaryPurple.copy(alpha = 0.9f), //MaterialTheme.colors.primary
                                 )
                             ) {
                                 Text("Forgot Password?")

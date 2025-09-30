@@ -7,6 +7,7 @@ import androidx.compose.ui.window.application
 import navigation.NavigationHost
 import navigation.Screen
 import navigation.rememberNavController
+import theme.GradientTheme
 
 @Composable
 @Preview
@@ -17,7 +18,7 @@ fun App() {
         startDestination = Screen.Login.route
     )
 
-    MaterialTheme {
+    GradientTheme {
         // Use NavigationHost to handle routing
         NavigationHost(navController = navController)
     }

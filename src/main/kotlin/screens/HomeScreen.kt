@@ -99,7 +99,7 @@ fun HomeScreen(
 
                     Column {
                         Text(
-                            text = "dUTILS",
+                            text = "dUtils",
                             style = MaterialTheme.typography.h4,
                             color = MaterialTheme.colors.onBackground,
                             fontWeight = FontWeight.Bold
