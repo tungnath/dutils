@@ -13,11 +13,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import theme.GradientColors
 import utils.CommonUtils.randomPassword
 import java.util.Locale.getDefault
 import java.util.prefs.Preferences
@@ -58,20 +59,14 @@ fun ForgotPasswordScreen(
 
     Box(
         modifier = Modifier.fillMaxSize().background(
-            Brush.verticalGradient(
-                listOf(
-                    MaterialTheme.colors.primary.copy(alpha = 0.3f),
-                    MaterialTheme.colors.background,
-                    MaterialTheme.colors.secondary.copy(alpha = 0.3f)
-                )
-            )
+            GradientColors.gradientBackground
         )
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(0.8f).fillMaxHeight(0.85f).align(Alignment.Center),
             elevation = 12.dp,
             shape = RoundedCornerShape(16.dp),
-            backgroundColor = MaterialTheme.colors.surface
+            backgroundColor = GradientColors.cardSurface
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
 
@@ -91,16 +86,25 @@ fun ForgotPasswordScreen(
                                 modifier = Modifier.size(56.dp).clip(RoundedCornerShape(12.dp))
                             )
                         } else {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
-                                tint = MaterialTheme.colors.primary,
-                                modifier = Modifier.size(56.dp)
-                            )
+                            Box(
+                                modifier = Modifier.size(60.dp).background(
+                                    brush = GradientColors.primaryButton, shape = RoundedCornerShape(20.dp)
+                                ), contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colors.primary,
+                                    modifier = Modifier.size(56.dp)
+                                )
+                            }
                         }
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "Forgot Password", style = MaterialTheme.typography.h5, fontWeight = FontWeight.Bold
+                            "Forgot Password",
+                            style = MaterialTheme.typography.h5,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colors.onSurface
                         )
                     }
                 }
@@ -122,7 +126,7 @@ fun ForgotPasswordScreen(
                             label = { Text("Username") },
                             leadingIcon = {
                                 Icon(
-                                    Icons.Default.Person, null, tint = MaterialTheme.colors.primary
+                                    Icons.Default.Person, null, tint = GradientColors.primaryPurple
                                 )
                             },
                             singleLine = true,
@@ -136,8 +140,10 @@ fun ForgotPasswordScreen(
                                     ) onForgotPasswordSuccess()
                                 }),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = MaterialTheme.colors.primary,
-                                focusedLabelColor = MaterialTheme.colors.primary
+                                focusedBorderColor = GradientColors.primaryPurple,
+                                focusedLabelColor = GradientColors.primaryPurple,
+                                backgroundColor = Color.White.copy(alpha = 0.8f),
+                                unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f)
                             )
                         )
 
@@ -158,9 +164,23 @@ fun ForgotPasswordScreen(
                                     print("Password changed")
 //                                    onForgotPasswordSuccess()
                                 }
-                            }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp), shape = RoundedCornerShape(12.dp)
+                            }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+
+                                //                            .height(56.dp)
+                                .background(
+                                    brush = GradientColors.primaryButton, shape = RoundedCornerShape(18.dp)
+                                ), colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color.Transparent
+                            ), elevation = ButtonDefaults.elevation(0.dp),
+
+                            shape = RoundedCornerShape(18.dp)
                         ) {
-                            Text("Reset")
+                            Text(
+                                "Reset",
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold,
+                                style = MaterialTheme.typography.button
+                            )
                         }
 
                         Row(
@@ -168,7 +188,7 @@ fun ForgotPasswordScreen(
                         ) {
                             TextButton(
                                 onClick = onNavigateToLogin, colors = ButtonDefaults.textButtonColors(
-                                    contentColor = MaterialTheme.colors.primary
+                                    contentColor = GradientColors.primaryPurple.copy(alpha = 0.9f),
                                 )
                             ) {
                                 Text("Already Have Account?")
@@ -176,7 +196,7 @@ fun ForgotPasswordScreen(
 
                             TextButton(
                                 onClick = onNavigateToSignup, colors = ButtonDefaults.textButtonColors(
-                                    contentColor = MaterialTheme.colors.primary
+                                    contentColor = GradientColors.primaryPurple.copy(alpha = 0.9f),
                                 )
                             ) {
                                 Text("Doesn't Have Account?")
@@ -190,87 +210,5 @@ fun ForgotPasswordScreen(
             }
         }
     }
-
-
-//    Column(
-//        modifier = Modifier.fillMaxSize().padding(16.dp),
-//        verticalArrangement = Arrangement.Center,
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//
-//        Card(
-//            modifier = Modifier.fillMaxWidth(fraction = 0.7f).fillMaxHeight(fraction = 0.85f)
-////                .wrapContentHeight()
-//                .padding(8.dp), elevation = 16.dp, shape = RoundedCornerShape(12.dp)
-//        ) {
-//
-//            Column(
-//                modifier = Modifier.fillMaxSize().padding(18.dp),
-//                verticalArrangement = Arrangement.Center,
-//                horizontalAlignment = Alignment.CenterHorizontally
-//            ) {
-//
-//                Text(
-//                    text = "Forgot Password",
-//                    style = MaterialTheme.typography.h4,
-//                    color = MaterialTheme.colors.primary,
-//                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-//                    textAlign = TextAlign.Center,
-//                    fontWeight = FontWeight.Bold
-//                )
-//
-//                OutlinedTextField(
-//                    value = username,
-//                    onValueChange = { username = it; message = null },
-//                    label = { Text("Username") },
-//                    singleLine = true,
-//                    modifier = Modifier.fillMaxWidth(0.6f),
-//                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-//                    keyboardActions = KeyboardActions(
-//                        onDone = {
-//                            if (validateCredentials(username)) onForgotPasswordSuccess()
-//                            else message = "Invalid credentials"
-//                        })
-//                )
-//
-////                message?.let {
-////                    Text(
-////                        text = it, color = MaterialTheme.colors.error, modifier = Modifier.padding(top = 8.dp)
-////                    )
-////                }
-//
-//                message?.let { msg ->
-//                    Text(
-//                        text = msg, color = if (msg.startsWith("Your new password")) {
-//                            MaterialTheme.colors.primary  // success message
-//                        } else {
-//                            MaterialTheme.colors.error     // error message
-//                        }, modifier = Modifier.padding(top = 8.dp)
-//                    )
-//                }
-//
-//                Button(
-//                    onClick = {
-//                        if (validateCredentials(username)) {
-//                            onForgotPasswordSuccess()
-//                        } else {
-//                            message = "Invalid credentials"
-//                        }
-//                    }, modifier = Modifier.fillMaxWidth(0.6f).padding(top = 16.dp)
-//                ) {
-//                    Text("Reset", modifier = Modifier.padding(4.dp))
-//                }
-//
-//                Row(
-//                    modifier = Modifier.padding(top = 8.dp).fillMaxWidth(0.6f),
-//                    horizontalArrangement = Arrangement.SpaceBetween
-//                ) {
-//                    TextButton(onClick = onNavigateToLogin) { Text("Login") }
-//                    TextButton(onClick = onNavigateToSignup) { Text("Sign Up") }
-//                }
-//            }
-//
-//        }
-//    }
 
 }

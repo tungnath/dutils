@@ -12,11 +12,18 @@ import androidx.compose.ui.graphics.Color
 object GradientColors {
     val gradientBackground = Brush.verticalGradient(
         colors = listOf(
-            Color(0xFFFF9A8B), // Peach/Orange at top
-            Color(0xFFFECFEF), // Light pink
-            Color(0xFFFECFEF), // Light pink middle
-            Color(0xFFB8E6FF), // Light blue
-            Color(0xFF6366F1)  // Purple/Blue at bottom
+            Color(0xFFFF9A8B).copy(alpha = 0.6f), // Peach/Orange
+            Color(0xFFFECFEF).copy(alpha = 0.6f), // Light pink
+            Color(0xFFB8E6FF).copy(alpha = 0.6f), // Light blue
+            Color(0xFF6366F1).copy(alpha = 0.6f)  // Purple/Blue
+        )
+    )
+
+    val gradientBackground2 = Brush.verticalGradient(
+        colors = listOf(
+            Color(0xFF6366F1).copy(alpha = 0.2f),
+            Color(0xFFFFFFFF),
+            Color(0xFFFF9A8B).copy(alpha = 0.2f),
         )
     )
 

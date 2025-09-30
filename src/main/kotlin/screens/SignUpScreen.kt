@@ -79,7 +79,8 @@ fun SignUpScreen(
             Column(modifier = Modifier.fillMaxSize()) {
 
                 Box(
-                    modifier = Modifier.fillMaxWidth().weight(0.25f), contentAlignment = Alignment.Center
+                    modifier = Modifier.fillMaxWidth().weight(0.25f),
+                    contentAlignment = Alignment.Center
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -213,7 +214,8 @@ fun SignUpScreen(
                                     brush = GradientColors.primaryButton, shape = RoundedCornerShape(18.dp)
                                 ), colors = ButtonDefaults.buttonColors(
                                 backgroundColor = Color.Transparent
-                            ), elevation = ButtonDefaults.elevation(0.dp), shape = RoundedCornerShape(18.dp)
+                            ), elevation = ButtonDefaults.elevation(0.dp),
+                            shape = RoundedCornerShape(18.dp)
                         ) {
                             Text(
                                 "Create Account",
