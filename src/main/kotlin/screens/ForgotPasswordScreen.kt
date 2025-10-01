@@ -176,7 +176,7 @@ fun ForgotPasswordScreen(
                             shape = RoundedCornerShape(18.dp)
                         ) {
                             Text(
-                                "Reset",
+                                "Reset Password",
                                 color = Color.White,
                                 fontWeight = FontWeight.SemiBold,
                                 style = MaterialTheme.typography.button
@@ -191,7 +191,7 @@ fun ForgotPasswordScreen(
                                     contentColor = GradientColors.primaryPurple.copy(alpha = 0.9f),
                                 )
                             ) {
-                                Text("Already Have Account?")
+                                Text("Back to Login")
                             }
 
                             TextButton(
@@ -199,7 +199,7 @@ fun ForgotPasswordScreen(
                                     contentColor = GradientColors.primaryPurple.copy(alpha = 0.9f),
                                 )
                             ) {
-                                Text("Doesn't Have Account?")
+                                Text("Create Account")
                             }
                         }
 

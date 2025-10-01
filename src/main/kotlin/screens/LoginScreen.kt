@@ -202,7 +202,7 @@ fun LoginScreen(
                                     contentColor = GradientColors.primaryPurple.copy(alpha = 0.9f),
                                 )
                             ) {
-                                Text("Doesn't Have Account?")
+                                Text("Create Account")
                             }
 
                             TextButton(
