@@ -3,6 +3,8 @@ package screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +19,9 @@ import utils.FileOperationsUtils
 import utils.openFileDialog
 
 @Composable
-fun FileOperationsScreen() {
+fun FileOperationsScreen(
+    onNavigateUpToHomeScreen: () -> Unit
+) {
 
     val scaffoldState = rememberScaffoldState()
     var filePath by remember { mutableStateOf("") }
@@ -37,7 +41,18 @@ fun FileOperationsScreen() {
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold
                     )
-                }, backgroundColor = MaterialTheme.colors.primary
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        onNavigateUpToHomeScreen()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                backgroundColor = MaterialTheme.colors.primary
             )
         }) { paddingValues ->
         Column(

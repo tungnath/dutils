@@ -53,8 +53,13 @@ fun NavigationHost(navController: NavController) {
         }
 
         Screen.FileOperations.route -> {
-            FileOperationsScreen()
+            FileOperationsScreen(
+                onNavigateUpToHomeScreen = {
+                    navController.navigate(Screen.Home.route)
+                }
+            )
         }
+
     }
 }
 

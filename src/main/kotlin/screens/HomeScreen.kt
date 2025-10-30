@@ -67,7 +67,8 @@ fun HomeScreen(
             subtitle = "Rename & Organize",
             icon = Icons.Default.FolderSpecial,
             background = Brush.verticalGradient(
-                colors = listOf(Color(0xfdf80a02), Color(0xffbd0202))
+                colors = listOf(MaterialTheme.colors.primary, MaterialTheme.colors.primaryVariant)
+//                colors = listOf(Color(0xFF2196F3), Color(0xFF1976D2))
             ),
             textColor = Color(0xffffffff),
             onClick = onNavigateToFileOps,
@@ -78,7 +79,7 @@ fun HomeScreen(
             subtitle = "20°C\nSunny Day",
             icon = Icons.Default.Cloud,
             background = Brush.verticalGradient(
-                colors = listOf(Color(0xFF2196F3), Color(0xFF1976D2))
+                colors = listOf(Color(0xfdf80a02), Color(0xffbd0202))
             ),
             onClick = { /* TODO */ },
             isEnabled = false
@@ -282,14 +283,14 @@ private fun FloatingNavigationDrawer(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Apps,
-                            contentDescription = "dUTILS",
+                            contentDescription = "dUtils",
                             tint = Color(0xFF1565C0),
                             modifier = Modifier.size(28.dp)
                         )
                     }
 
                     Text(
-                        text = "dUTILS",
+                        text = "dUtils",
                         color = Color.White,
                         style = MaterialTheme.typography.h6,
                         fontWeight = FontWeight.Bold
