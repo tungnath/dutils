@@ -1,8 +1,12 @@
 package screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -15,12 +19,15 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+
 
 // Navigation Item Data Class
 data class NavigationItem(
@@ -38,12 +45,12 @@ data class DashboardTile(
     val isEnabled: Boolean = true
 )
 
-
 @Composable
 fun HomeScreen(
     onNavigateToFileOps: () -> Unit, onLogout: () -> Unit
 ) {
     var selectedNavItem by remember { mutableStateOf("Home") }
+    var isDrawerOpen by remember { mutableStateOf(false) }
 
     // Navigation Items
     val navigationItems = listOf(
@@ -69,7 +76,7 @@ fun HomeScreen(
         DashboardTile(
             title = "Weather",
             subtitle = "20°C\nSunny Day",
-            icon = Icons.Default.WbSunny,
+            icon = Icons.Default.Cloud,
             background = Brush.verticalGradient(
                 colors = listOf(Color(0xFF2196F3), Color(0xFF1976D2))
             ),
@@ -79,7 +86,7 @@ fun HomeScreen(
         DashboardTile(
             title = "Calendar",
             subtitle = "Today's Events",
-            icon = Icons.Default.CalendarToday,
+            icon = Icons.Default.DateRange,
             background = Brush.verticalGradient(
                 colors = listOf(Color(0xfff64fe8), Color(0xfff386e1))
             ),
@@ -87,88 +94,27 @@ fun HomeScreen(
             isEnabled = false
         ),
         DashboardTile(
-            title = "Tasks", subtitle = "Pending Items", icon = Icons.Default.Task,
+            title = "Tasks",
+            subtitle = "Pending Items",
+            icon = Icons.Default.CheckCircle,
             background = Brush.verticalGradient(
                 colors = listOf(Color(0xFF00BCD4), Color(0xFF0097A7))
             ),
             onClick = { /* TODO */ },
             isEnabled = false
         ),
+    )
 
-        )
-
-    Row(
+    Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Sidebar Navigation
+        // Main Content Area (always visible, full screen)
         Column(
-            modifier = Modifier.fillMaxHeight().width(280.dp).background(Color(0xFF1565C0)),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize().background(Color(0xFFF8FAFF))
         ) {
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // App Logo/Icon
-            Box(
-                modifier = Modifier.size(64.dp).background(Color.White, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Apps,
-                    contentDescription = "dUTILS",
-                    tint = Color(0xFF1565C0),
-                    modifier = Modifier.size(32.dp)
-                )
-            }
-
-            Text(
-                text = "dUTILS",
-                color = Color.White,
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Navigation Items
-            navigationItems.forEach { item ->
-                NavigationMenuItem(
-                    item = item, onClick = { selectedNavItem = item.label })
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Logout Button
-            OutlinedButton(
-                onClick = onLogout,
-                modifier = Modifier.fillMaxWidth(0.8f).padding(bottom = 24.dp),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = Color.White
-                ),
-//                border = ButtonDefaults.outlinedButtonBorder.copy(
-//                    brush = Brush.horizontalGradient(
-//                        colors = listOf(Color.White, Color.White)
-//                    )
-//                )
-                border = BorderStroke(
-                    width = 1.dp, color = MaterialTheme.colors.background
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ExitToApp, contentDescription = null, modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Logout")
-            }
-        }
-
-        // Main Content Area
-        Column(
-            modifier = Modifier.weight(1f).fillMaxHeight().background(Color(0xFFF8FAFF))
-        ) {
-            // Top Bar
-            TopBar()
+            // Top Bar with Hamburger Menu
+            TopBarWithHamburger(
+                onMenuClick = { isDrawerOpen = !isDrawerOpen })
 
             // Welcome Section
             WelcomeSection()
@@ -176,45 +122,66 @@ fun HomeScreen(
             // Dashboard Grid
             DashboardGrid(tiles = dashboardTiles)
         }
+
+        // Overlay (dimmed background when drawer is open)
+        if (isDrawerOpen) {
+            Box(
+                modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.5f)).clickable(
+                    interactionSource = remember { MutableInteractionSource() }, indication = null
+                ) {
+                    isDrawerOpen = false
+                }.zIndex(1f)
+            )
+        }
+
+        // Floating Navigation Drawer
+        AnimatedVisibility(
+            visible = isDrawerOpen,
+            enter = slideInHorizontally(initialOffsetX = { -it }),
+            exit = slideOutHorizontally(targetOffsetX = { -it }),
+            modifier = Modifier.zIndex(2f)
+        ) {
+            FloatingNavigationDrawer(
+                navigationItems = navigationItems,
+                selectedNavItem = selectedNavItem,
+                onNavItemClick = { item ->
+                    selectedNavItem = item
+                    isDrawerOpen = false
+                },
+                onLogout = {
+                    onLogout()
+                    isDrawerOpen = false
+                },
+                onClose = { isDrawerOpen = false })
+        }
     }
 }
 
 @Composable
-private fun NavigationMenuItem(
-    item: NavigationItem, onClick: () -> Unit
+private fun TopBarWithHamburger(
+    onMenuClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(0.85f).height(48.dp).background(
-            color = if (item.isSelected) Color.White.copy(alpha = 0.2f) else Color.Transparent,
-            shape = RoundedCornerShape(12.dp)
-        ).clickable { onClick() }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            imageVector = item.icon,
-            contentDescription = item.label,
-            tint = Color.White,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = item.label,
-            color = Color.White,
-            style = MaterialTheme.typography.body1,
-            fontWeight = if (item.isSelected) FontWeight.SemiBold else FontWeight.Normal
-        )
-    }
-}
-
-@Composable
-private fun TopBar() {
-    Row(
-        modifier = Modifier.fillMaxWidth().height(72.dp).padding(horizontal = 32.dp, vertical = 16.dp),
+        modifier = Modifier.fillMaxWidth().height(72.dp).padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Left side - Title and Search
+        // Left side - Hamburger Menu and Title
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Hamburger Menu Icon
+            IconButton(
+                onClick = onMenuClick, modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Menu",
+                    tint = Color(0xFF333333),
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+
             Text(
                 text = "Home",
                 style = MaterialTheme.typography.h5,
@@ -222,7 +189,7 @@ private fun TopBar() {
                 color = Color(0xFF333333)
             )
 
-            Spacer(modifier = Modifier.width(32.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             // Search Bar
             OutlinedTextField(
@@ -265,10 +232,10 @@ private fun TopBar() {
             // Profile Avatar
             Box(
                 modifier = Modifier.size(40.dp).background(
-                        brush = Brush.horizontalGradient(
-                            colors = listOf(Color(0xFF1565C0), Color(0xFF1976D2))
-                        ), shape = CircleShape
-                    ).clickable { }, contentAlignment = Alignment.Center
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(Color(0xFF1565C0), Color(0xFF1976D2))
+                    ), shape = CircleShape
+                ).clickable { }, contentAlignment = Alignment.Center
             ) {
                 Icon(
                     Icons.Default.Person,
@@ -278,6 +245,124 @@ private fun TopBar() {
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun FloatingNavigationDrawer(
+    navigationItems: List<NavigationItem>,
+    selectedNavItem: String,
+    onNavItemClick: (String) -> Unit,
+    onLogout: () -> Unit,
+    onClose: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxHeight().width(280.dp).shadow(16.dp),
+        elevation = 16.dp,
+        shape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp),
+        backgroundColor = Color(0xFF1565C0)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Header with Close Button
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // App Logo/Icon
+                Row(
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.size(48.dp).background(Color.White, CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Apps,
+                            contentDescription = "dUTILS",
+                            tint = Color(0xFF1565C0),
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+
+                    Text(
+                        text = "dUTILS",
+                        color = Color.White,
+                        style = MaterialTheme.typography.h6,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                // Close Button
+                IconButton(
+                    onClick = onClose, modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close, contentDescription = "Close", tint = Color.White
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Navigation Items
+            navigationItems.forEach { item ->
+                NavigationMenuItem(
+                    item = item.copy(isSelected = item.label == selectedNavItem),
+                    onClick = { onNavItemClick(item.label) })
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Logout Button
+            OutlinedButton(
+                onClick = onLogout,
+                modifier = Modifier.fillMaxWidth(0.85f).padding(bottom = 16.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = Color.White
+                ),
+                border = BorderStroke(1.dp, Color.White)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ExitToApp,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = Color(0xFF1565C0)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Logout", color = Color(0xFF1565C0))
+            }
+        }
+    }
+}
+
+@Composable
+private fun NavigationMenuItem(
+    item: NavigationItem, onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(0.85f).height(48.dp).background(
+            color = if (item.isSelected) Color.White.copy(alpha = 0.2f) else Color.Transparent,
+            shape = RoundedCornerShape(12.dp)
+        ).clickable { onClick() }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = item.icon,
+            contentDescription = item.label,
+            tint = Color.White,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(
+            text = item.label,
+            color = Color.White,
+            style = MaterialTheme.typography.body1,
+            fontWeight = if (item.isSelected) FontWeight.SemiBold else FontWeight.Normal
+        )
     }
 }
 
@@ -327,8 +412,8 @@ private fun DashboardGrid(tiles: List<DashboardTile>) {
 private fun DashboardTileCard(tile: DashboardTile) {
     Card(
         modifier = Modifier.fillMaxWidth().height(200.dp).clickable(enabled = tile.isEnabled) {
-                if (tile.isEnabled) tile.onClick()
-            }, elevation = if (tile.isEnabled) 8.dp else 2.dp, shape = RoundedCornerShape(20.dp)
+            if (tile.isEnabled) tile.onClick()
+        }, elevation = if (tile.isEnabled) 8.dp else 2.dp, shape = RoundedCornerShape(20.dp)
     ) {
         Box(
             modifier = Modifier.fillMaxSize().background(tile.background)
@@ -339,9 +424,9 @@ private fun DashboardTileCard(tile: DashboardTile) {
                 // Top section - Icon
                 Box(
                     modifier = Modifier.size(64.dp).background(
-                            color = if (tile.textColor == Color.White) Color.White.copy(alpha = 0.2f)
-                            else Color(0xFF1565C0).copy(alpha = 0.1f), shape = RoundedCornerShape(16.dp)
-                        ), contentAlignment = Alignment.Center
+                        color = if (tile.textColor == Color.White) Color.White.copy(alpha = 0.2f)
+                        else Color(0xFF1565C0).copy(alpha = 0.1f), shape = RoundedCornerShape(16.dp)
+                    ), contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = tile.icon,
