@@ -65,11 +65,11 @@ fun HomeScreen(
         DashboardTile(
             title = "File Operations",
             subtitle = "Rename & Organize",
-            icon = Icons.Default.Folder,
+            icon = Icons.Default.FolderSpecial,
             background = Brush.verticalGradient(
-                colors = listOf(Color(0xffeadb3c), Color(0xfff3e87a))
+                colors = listOf(Color(0xfdf80a02), Color(0xffbd0202))
             ),
-            textColor = Color(0xFF333333),
+            textColor = Color(0xffffffff),
             onClick = onNavigateToFileOps,
             isEnabled = true
         ),
@@ -88,7 +88,7 @@ fun HomeScreen(
             subtitle = "Today's Events",
             icon = Icons.Default.DateRange,
             background = Brush.verticalGradient(
-                colors = listOf(Color(0xfff64fe8), Color(0xfff386e1))
+                colors = listOf(Color(0xfff64fe8), Color(0xffac3398))
             ),
             onClick = { /* TODO */ },
             isEnabled = false
