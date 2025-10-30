@@ -177,7 +177,12 @@ fun LoginScreen(
                         }
                         Button(
                             onClick = {
-                                if (validateCredentials(username, password)) onLoginSuccess()
+                                if (validateCredentials(username, password)) {
+                                    // Save the login user
+                                    prefs.put("login_user", username)
+
+                                    onLoginSuccess()
+                                }
                             }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
 //                            .height(56.dp)
                                 .background(

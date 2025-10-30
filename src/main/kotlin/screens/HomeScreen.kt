@@ -27,6 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import navigation.Screen
+import java.util.prefs.Preferences
 
 
 // Navigation Item Data Class
@@ -150,6 +152,10 @@ fun HomeScreen(
                     isDrawerOpen = false
                 },
                 onLogout = {
+                    // remove the login user
+                    val prefs = Preferences.userRoot().node("dUtils")
+                    prefs.remove("login_user")
+
                     onLogout()
                     isDrawerOpen = false
                 },
@@ -463,7 +469,7 @@ private fun DashboardTileCard(tile: DashboardTile) {
                     modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)
                 ) {
                     Card(
-                        backgroundColor = Color(0xFFFF9800).copy(alpha = 0.9f),
+                        backgroundColor = Color(0xffffd31d).copy(alpha = 0.9f),
                         shape = RoundedCornerShape(12.dp),
                         elevation = 2.dp
                     ) {

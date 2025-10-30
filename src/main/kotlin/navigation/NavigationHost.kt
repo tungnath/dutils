@@ -3,6 +3,7 @@ package navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import screens.*
+import java.util.prefs.Preferences
 
 /**
  * Navigation Host that handles routing between different screens
@@ -48,7 +49,7 @@ fun NavigationHost(navController: NavController) {
             HomeScreen(onNavigateToFileOps = {
                 navController.navigate(Screen.FileOperations.route)
             }, onLogout = {
-                navController.navigateToStart()
+                navController.navigate(Screen.Login.route) // navigateToStart()
             })
         }
 
