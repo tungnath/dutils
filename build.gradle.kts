@@ -22,6 +22,8 @@ dependencies {
     // With compose.desktop.common you will also lose @Preview functionality
     implementation(compose.desktop.currentOs)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
+    implementation("org.jetbrains.compose.material:material-icons-extended-desktop:1.7.3")
+
 }
 
 compose.desktop {
