@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import utils.DataUtils
 import viewmodels.NotificationViewModel
 
 // Data class for notifications
@@ -38,44 +39,7 @@ fun NotificationScreen(viewModel: NotificationViewModel) {
     var selectedItem by remember { mutableStateOf<NotificationItem?>(null) }
 
     // sample data
-    val allNotifications = listOf(
-        NotificationItem(
-            id = "1",
-            title = "File Operation",
-            subtitle = "Successfully renamed 5 files",
-            icon = Icons.Default.CheckCircle,
-            timestamp = "2024-10-31",
-            isRead = true
-        ), NotificationItem(
-            id = "2",
-            title = "System Update",
-            subtitle = "New version available",
-            icon = Icons.Default.Info,
-            timestamp = "2024-10-30",
-            isRead = false
-        ), NotificationItem(
-            id = "3",
-            title = "Error Alert",
-            subtitle = "Failed to process one file",
-            icon = Icons.Default.Error,
-            timestamp = "2024-10-29",
-            isRead = false
-        ), NotificationItem(
-            id = "4",
-            title = "Task Completed",
-            subtitle = "Batch operation finished",
-            icon = Icons.Default.Done,
-            timestamp = "2024-10-28",
-            isRead = true
-        ), NotificationItem(
-            id = "5",
-            title = "User Activity",
-            subtitle = "Login from new device",
-            icon = Icons.Default.Person,
-            timestamp = "2024-10-27",
-            isRead = true
-        )
-    )
+    val allNotifications = DataUtils.allNotifications
 
     // Filter notifications based on a search query
     val filteredNotifications = remember(searchQuery) {
