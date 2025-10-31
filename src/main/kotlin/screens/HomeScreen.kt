@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import navigation.Screen
+import utils.DataUtils.areNotificationsPending
 import java.util.prefs.Preferences
 
 
@@ -232,17 +233,22 @@ private fun TopBarWithHamburger(
             // Notification Bell
             IconButton(
                 onClick = {
-                    println("Notification button clicked")
                     onNavToNotifications()
+
                 }) {
                 Box {
                     Icon(
                         Icons.Default.Notifications, contentDescription = "Notifications", tint = Color(0xFF666666)
                     )
-                    // Notification badge
-                    Box(
-                        modifier = Modifier.size(8.dp).background(Color.Red, CircleShape).align(Alignment.TopEnd)
-                    )
+
+                    if (areNotificationsPending) {
+                        // Notification badge
+                        Box(
+                            modifier = Modifier.size(8.dp).background(Color.Red, CircleShape)
+                                .align(Alignment.TopEnd)
+                        )
+                    }
+
                 }
             }
 

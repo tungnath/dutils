@@ -20,7 +20,7 @@ object DataUtils {
             subtitle = "New version available",
             icon = Icons.Default.Info,
             timestamp = "2024-10-30",
-            isRead = false
+            isRead = true
         ), NotificationItem(
             id = "3",
             title = "Error Alert",
@@ -44,5 +44,7 @@ object DataUtils {
             isRead = true
         )
     )
+
+    val areNotificationsPending: Boolean = allNotifications.any { !it.isRead }
 
 }
