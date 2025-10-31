@@ -3,6 +3,7 @@ package navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import screens.*
+import viewmodels.NotificationViewModel
 import java.util.prefs.Preferences
 
 /**
@@ -46,15 +47,29 @@ fun NavigationHost(navController: NavController) {
         }
 
         Screen.Home.route -> {
-            HomeScreen(onNavigateToFileOps = {
-                navController.navigate(Screen.FileOperations.route)
-            }, onLogout = {
-                navController.navigate(Screen.Login.route) // navigateToStart()
-            })
+            HomeScreen(
+                onNavigateToFileOps = {
+                    navController.navigate(Screen.FileOperations.route)
+                },
+                onNavigateToNotifications = {
+                    navController.navigate(Screen.Notifications.route)
+                },
+                onLogout = {
+                    navController.navigate(Screen.Login.route) // navigateToStart()
+                })
         }
 
         Screen.FileOperations.route -> {
             FileOperationsScreen(
+                onNavigateUpToHomeScreen = {
+                    navController.navigate(Screen.Home.route)
+                }
+            )
+        }
+
+        Screen.Notifications.route -> {
+            NotificationScreen(
+                NotificationViewModel(),
                 onNavigateUpToHomeScreen = {
                     navController.navigate(Screen.Home.route)
                 }

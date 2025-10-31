@@ -49,7 +49,9 @@ data class DashboardTile(
 
 @Composable
 fun HomeScreen(
-    onNavigateToFileOps: () -> Unit, onLogout: () -> Unit
+    onNavigateToFileOps: () -> Unit,
+    onNavigateToNotifications: () -> Unit,
+    onLogout: () -> Unit
 ) {
     var selectedNavItem by remember { mutableStateOf("Home") }
     var isDrawerOpen by remember { mutableStateOf(false) }
@@ -115,9 +117,13 @@ fun HomeScreen(
         Column(
             modifier = Modifier.fillMaxSize().background(Color(0xFFF8FAFF))
         ) {
+
+
             // Top Bar with Hamburger Menu
             TopBarWithHamburger(
-                onMenuClick = { isDrawerOpen = !isDrawerOpen })
+                onMenuClick = { isDrawerOpen = !isDrawerOpen },
+                onNavToNotifications = onNavigateToNotifications
+            )
 
             // Welcome Section
             WelcomeSection()
@@ -166,7 +172,8 @@ fun HomeScreen(
 
 @Composable
 private fun TopBarWithHamburger(
-    onMenuClick: () -> Unit
+    onMenuClick: () -> Unit,
+    onNavToNotifications: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth().height(72.dp).padding(horizontal = 24.dp, vertical = 16.dp),
@@ -224,7 +231,10 @@ private fun TopBarWithHamburger(
         ) {
             // Notification Bell
             IconButton(
-                onClick = { }) {
+                onClick = {
+                    println("Notification button clicked")
+                    onNavToNotifications()
+                }) {
                 Box {
                     Icon(
                         Icons.Default.Notifications, contentDescription = "Notifications", tint = Color(0xFF666666)

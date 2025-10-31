@@ -9,13 +9,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import utils.DataUtils
@@ -33,7 +35,8 @@ data class NotificationItem(
 
 
 @Composable
-fun NotificationScreen(viewModel: NotificationViewModel) {
+fun NotificationScreen(viewModel: NotificationViewModel, onNavigateUpToHomeScreen: () -> Unit) {
+    val scaffoldState = rememberScaffoldState()
     val readIds by viewModel.readNotifications
     var searchQuery by remember { mutableStateOf("") }
     var selectedItem by remember { mutableStateOf<NotificationItem?>(null) }
@@ -48,79 +51,104 @@ fun NotificationScreen(viewModel: NotificationViewModel) {
         } else {
             allNotifications.filter {
                 it.title.contains(searchQuery, ignoreCase = true) || it.subtitle.contains(
-                    searchQuery,
-                    ignoreCase = true
+                    searchQuery, ignoreCase = true
                 )
             }
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp)
-    ) {
-        // Search Bar
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            label = { Text("Search notifications") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-            modifier = Modifier.fillMaxWidth().height(48.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Color(0xFF1565C0), focusedLabelColor = Color(0xFF1565C0)
-            ),
-            shape = RoundedCornerShape(12.dp),
-            singleLine = true
-        )
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Notifications List
-        if (filteredNotifications.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-            ) {
+    Scaffold(
+        scaffoldState = scaffoldState, topBar = {
+            TopAppBar(
+                title = {
                 Text(
-                    text = if (searchQuery.isEmpty()) "No notifications"
-                    else "No notifications found", color = Color.Gray,
-                    style = MaterialTheme.typography.body1
+                    text = "Notifications",
+                    style = MaterialTheme.typography.h5,
+                    color = Color.White,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold
                 )
-            }
-        } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(filteredNotifications) { notification ->
-                    val isRead = notification.id in readIds
-
-                    NotificationCard(notification = notification.copy(isRead = isRead)) {
-                        viewModel.markAsRead(notification.id)
-                        selectedItem = notification    // <-- set when clicked
-                    }
-
-                }
-            }
-        }
-
-
-        if (selectedItem != null) {
-            AlertDialog(
-                onDismissRequest = { selectedItem = null },
-                title = { Text(text = selectedItem!!.title) },
-                text = {
-                    Text(
-                        text = selectedItem!!.title + "\n" + selectedItem!!.subtitle
-                                + "\n" + selectedItem!!.timestamp
+            }, navigationIcon = {
+                IconButton(onClick = {
+                    onNavigateUpToHomeScreen()
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack, contentDescription = "Back"
                     )
-                },
-                confirmButton = {
-                    TextButton(onClick = { selectedItem = null }) {
-                        Text("OK")
+                }
+            }, backgroundColor = MaterialTheme.colors.primary
+            )
+        }) { paddingValues ->
+
+        Column(
+            modifier = Modifier.fillMaxSize().padding(16.dp)
+        ) {
+            // Search Bar
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Search notifications") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                modifier = Modifier.fillMaxWidth().height(48.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color(0xFF1565C0), focusedLabelColor = Color(0xFF1565C0)
+                ),
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Notifications List
+            if (filteredNotifications.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (searchQuery.isEmpty()) "No notifications"
+                        else "No notifications found", color = Color.Gray, style = MaterialTheme.typography.body1
+                    )
+                }
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(filteredNotifications) { notification ->
+                        val isRead = notification.id in readIds
+
+                        NotificationCard(notification = notification.copy(isRead = isRead)) {
+                            viewModel.markAsRead(notification.id)
+                            selectedItem = notification    // <-- set when clicked
+                        }
+
                     }
                 }
-            )
+            }
+
+
+            if (selectedItem != null) {
+                AlertDialog(
+                    onDismissRequest = { selectedItem = null },
+                    title = { Text(text = selectedItem!!.title) },
+                    text = {
+                        Text(
+                            text = selectedItem!!.title + "\n" + selectedItem!!.subtitle + "\n" + selectedItem!!.timestamp
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { selectedItem = null }) {
+                            Text("OK")
+                        }
+                    })
+            }
+
         }
 
     }
+
+
 }
 
 @Composable
@@ -157,8 +185,7 @@ private fun NotificationCard(
 
             // Content
             Column(
-                modifier = Modifier.weight(1f).fillMaxHeight(),
-                verticalArrangement = Arrangement.Center
+                modifier = Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = notification.title,
