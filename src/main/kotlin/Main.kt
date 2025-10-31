@@ -5,6 +5,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import screens.NotificationScreen
+import viewmodels.NotificationViewModel
 
 @Composable
 @Preview
@@ -39,7 +40,7 @@ fun App() {
 
 
     MaterialTheme {
-        NotificationScreen()
+        NotificationScreen(NotificationViewModel())
     }
 
 }
