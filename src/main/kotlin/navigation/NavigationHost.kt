@@ -2,9 +2,9 @@ package navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import composables.NotificationScreen
 import screens.*
 import viewmodels.NotificationViewModel
-import java.util.prefs.Preferences
 
 /**
  * Navigation Host that handles routing between different screens

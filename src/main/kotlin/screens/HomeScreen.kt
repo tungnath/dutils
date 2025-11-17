@@ -8,9 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -25,11 +22,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import navigation.Screen
+import composables.DashboardGrid
+import composables.LoremIpsumCmp
 import utils.DataUtils.areNotificationsPending
 import java.util.prefs.Preferences
+
+
+sealed class HomeSection {
+    object Dashboard : HomeSection()
+    object Notifications : HomeSection()
+    object Profile : HomeSection()
+    object Settings : HomeSection()
+    // Add more as needed
+}
 
 
 // Navigation Item Data Class
@@ -50,17 +56,15 @@ data class DashboardTile(
 
 @Composable
 fun HomeScreen(
-    onNavigateToFileOps: () -> Unit,
-    onNavigateToNotifications: () -> Unit,
-    onLogout: () -> Unit
+    onNavigateToFileOps: () -> Unit, onNavigateToNotifications: () -> Unit, onLogout: () -> Unit
 ) {
+    var activeSection by remember { mutableStateOf<HomeSection>(HomeSection.Dashboard) }
     var selectedNavItem by remember { mutableStateOf("Home") }
     var isDrawerOpen by remember { mutableStateOf(false) }
 
     // Navigation Items
     val navigationItems = listOf(
         NavigationItem(Icons.Default.Home, "Home", selectedNavItem == "Home"),
-        NavigationItem(Icons.Default.Folder, "Files", selectedNavItem == "Files"),
         NavigationItem(Icons.Default.Settings, "Settings", selectedNavItem == "Settings"),
         NavigationItem(Icons.Default.Person, "Profile", selectedNavItem == "Profile")
     )
@@ -73,13 +77,11 @@ fun HomeScreen(
             icon = Icons.Default.FolderSpecial,
             background = Brush.verticalGradient(
                 colors = listOf(MaterialTheme.colors.primary, MaterialTheme.colors.primaryVariant)
-//                colors = listOf(Color(0xFF2196F3), Color(0xFF1976D2))
             ),
             textColor = Color(0xffffffff),
             onClick = onNavigateToFileOps,
             isEnabled = true
-        ),
-        DashboardTile(
+        ), DashboardTile(
             title = "Weather",
             subtitle = "20°C\nSunny Day",
             icon = Icons.Default.Cloud,
@@ -88,8 +90,7 @@ fun HomeScreen(
             ),
             onClick = { /* TODO */ },
             isEnabled = false
-        ),
-        DashboardTile(
+        ), DashboardTile(
             title = "Calendar",
             subtitle = "Today's Events",
             icon = Icons.Default.DateRange,
@@ -98,8 +99,7 @@ fun HomeScreen(
             ),
             onClick = { /* TODO */ },
             isEnabled = false
-        ),
-        DashboardTile(
+        ), DashboardTile(
             title = "Tasks",
             subtitle = "Pending Items",
             icon = Icons.Default.CheckCircle,
@@ -108,29 +108,29 @@ fun HomeScreen(
             ),
             onClick = { /* TODO */ },
             isEnabled = false
-        ),
+        )
     )
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Main Content Area (always visible, full screen)
+        // Home Content Area (always visible, full screen)
         Column(
             modifier = Modifier.fillMaxSize().background(Color(0xFFF8FAFF))
         ) {
-
-
             // Top Bar with Hamburger Menu
             TopBarWithHamburger(
+                activeSection = activeSection,
                 onMenuClick = { isDrawerOpen = !isDrawerOpen },
-                onNavToNotifications = onNavigateToNotifications
-            )
+                onNavToNotifications = { activeSection = HomeSection.Notifications })
 
-            // Welcome Section
-            WelcomeSection()
-
-            // Dashboard Grid
-            DashboardGrid(tiles = dashboardTiles)
+            // Main Content Area
+            when (activeSection) {
+                HomeSection.Dashboard -> MainContent(dashboardTiles = dashboardTiles)
+                HomeSection.Notifications -> onNavigateToNotifications()//LoremIpsumCmp(10)
+                HomeSection.Profile -> LoremIpsumCmp(11)
+                HomeSection.Settings -> LoremIpsumCmp(12)
+            }
         }
 
         // Overlay (dimmed background when drawer is open)
@@ -140,8 +140,7 @@ fun HomeScreen(
                     interactionSource = remember { MutableInteractionSource() }, indication = null
                 ) {
                     isDrawerOpen = false
-                }.zIndex(1f)
-            )
+                }.zIndex(1f))
         }
 
         // Floating Navigation Drawer
@@ -157,12 +156,19 @@ fun HomeScreen(
                 onNavItemClick = { item ->
                     selectedNavItem = item
                     isDrawerOpen = false
+
+                    println("Navigation item selected: $item")
+                    // Update active section based on selection
+                    activeSection = when (item) {
+                        "Home" -> HomeSection.Dashboard
+                        "Settings" -> HomeSection.Settings
+                        "Profile" -> HomeSection.Profile
+                        else -> HomeSection.Dashboard
+                    }
                 },
                 onLogout = {
-                    // remove the login user
                     val prefs = Preferences.userRoot().node("dUtils")
                     prefs.remove("login_user")
-
                     onLogout()
                     isDrawerOpen = false
                 },
@@ -172,7 +178,21 @@ fun HomeScreen(
 }
 
 @Composable
+private fun MainContent(dashboardTiles: List<DashboardTile>) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Welcome Section
+        WelcomeSection()
+
+        // Dashboard Grid
+        DashboardGrid(tiles = dashboardTiles)
+    }
+}
+
+@Composable
 private fun TopBarWithHamburger(
+    activeSection: HomeSection,
     onMenuClick: () -> Unit,
     onNavToNotifications: () -> Unit,
 ) {
@@ -232,20 +252,16 @@ private fun TopBarWithHamburger(
         ) {
             // Notification Bell
             IconButton(
-                onClick = {
-                    onNavToNotifications()
-
-                }) {
+                onClick = onNavToNotifications
+            ) {
                 Box {
                     Icon(
                         Icons.Default.Notifications, contentDescription = "Notifications", tint = Color(0xFF666666)
                     )
-
                     if (areNotificationsPending) {
                         // Notification badge
                         Box(
-                            modifier = Modifier.size(8.dp).background(Color.Red, CircleShape)
-                                .align(Alignment.TopEnd)
+                            modifier = Modifier.size(8.dp).background(Color.Red, CircleShape).align(Alignment.TopEnd)
                         )
                     }
 
@@ -255,10 +271,10 @@ private fun TopBarWithHamburger(
             // Profile Avatar
             Box(
                 modifier = Modifier.size(40.dp).background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(Color(0xFF1565C0), Color(0xFF1976D2))
-                    ), shape = CircleShape
-                ).clickable { }, contentAlignment = Alignment.Center
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(Color(0xFF1565C0), Color(0xFF1976D2))
+                        ), shape = CircleShape
+                    ).clickable { }, contentAlignment = Alignment.Center
             ) {
                 Icon(
                     Icons.Default.Person,
@@ -371,8 +387,7 @@ private fun NavigationMenuItem(
         modifier = Modifier.fillMaxWidth(0.85f).height(48.dp).background(
             color = if (item.isSelected) Color.White.copy(alpha = 0.2f) else Color.Transparent,
             shape = RoundedCornerShape(12.dp)
-        ).clickable { onClick() }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically
-    ) {
+        ).clickable { onClick() }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = item.icon,
             contentDescription = item.label,
@@ -416,89 +431,3 @@ private fun WelcomeSection() {
     }
 }
 
-@Composable
-private fun DashboardGrid(tiles: List<DashboardTile>) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 300.dp),
-        contentPadding = PaddingValues(32.dp),
-        horizontalArrangement = Arrangement.spacedBy(24.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(tiles) { tile ->
-            DashboardTileCard(tile = tile)
-        }
-    }
-}
-
-@Composable
-private fun DashboardTileCard(tile: DashboardTile) {
-    Card(
-        modifier = Modifier.fillMaxWidth().height(200.dp).clickable(enabled = tile.isEnabled) {
-            if (tile.isEnabled) tile.onClick()
-        }, elevation = if (tile.isEnabled) 8.dp else 2.dp, shape = RoundedCornerShape(20.dp)
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize().background(tile.background)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Top section - Icon
-                Box(
-                    modifier = Modifier.size(64.dp).background(
-                        color = if (tile.textColor == Color.White) Color.White.copy(alpha = 0.2f)
-                        else Color(0xFF1565C0).copy(alpha = 0.1f), shape = RoundedCornerShape(16.dp)
-                    ), contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = tile.icon,
-                        contentDescription = null,
-                        tint = if (tile.textColor == Color.White) Color.White else Color(0xFF1565C0),
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
-
-                // Bottom section - Content
-                Column {
-                    Text(
-                        text = tile.title,
-                        style = MaterialTheme.typography.h6,
-                        fontWeight = FontWeight.Bold,
-                        color = tile.textColor
-                    )
-                    if (tile.subtitle.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = tile.subtitle,
-                            style = MaterialTheme.typography.body2,
-                            color = tile.textColor.copy(alpha = 0.8f),
-                            fontSize = 12.sp
-                        )
-                    }
-                }
-            }
-
-            // Coming Soon badge for disabled tiles
-            if (!tile.isEnabled) {
-                Box(
-                    modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)
-                ) {
-                    Card(
-                        backgroundColor = Color(0xffffd31d).copy(alpha = 0.9f),
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = 2.dp
-                    ) {
-                        Text(
-                            text = "Soon",
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            style = MaterialTheme.typography.caption,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }
-        }
-    }
-}

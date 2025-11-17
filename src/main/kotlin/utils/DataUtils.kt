@@ -2,7 +2,7 @@ package utils
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import screens.NotificationItem
+import composables.NotificationItem
 
 object DataUtils {
 
